@@ -12,28 +12,41 @@ class wallServiceTest {
 
     @Test
     fun add() {
-        val post = Post(0)
+        val audio1 = Audio("Sting","Volna",3,5,12)
+        val audioAt = AudioAttachment(audio1)
+        val post = Post(1,1,1,"da","copy",
+            true,null,null,arrayOf(audioAt))
         val addId = wallService.add(post)
 
-        assertNotEquals(0, addId.id)
+        assertTrue(addId.id > 0)
     }
 
     @Test
     fun updateOne() {
-        val post = Post(0)
+        val audio1 = Audio("Sting","Volna",3,5,12)
+        val audioAt = AudioAttachment(audio1)
+        val post = Post(1,1,1,"da","copy",
+            true,null,null, arrayOf(audioAt))
+        val upOne = Post(1,1,1,"da","copy",
+            true,null,null,arrayOf(audioAt))
         wallService.add(post)
-        val upOne = Post(1)
+        wallService.add(upOne)
         val result = wallService.update(upOne)
 
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
     fun updateTwo() {
-        val post = Post(2)
-        wallService.add(post)
-        val upOne = wallService.update(post)
+        val video1 = Video("Sting","Volna",3,5,12)
+        val videoAt = VideoAttachment(video1)
+        val post = Post(1,1,1,"da","copy",
+            true,null,null,arrayOf(videoAt))
+        val upOne = Post(2,1,4,"da","copy",
+            true,null,null,arrayOf(videoAt))
+        wallService.add(upOne)
+        val result = wallService.update(upOne)
         
-        assertEquals(false, upOne)
+        assertFalse(result)
     }
 }
