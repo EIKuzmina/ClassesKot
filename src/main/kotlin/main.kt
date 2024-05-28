@@ -1,13 +1,49 @@
 data class Post(
-    val id: Int = 0, val ownerId: Int = 0, val date: Int = 0,
-    val text: String = "Meow", val postType: String = "suggest",
-    val canDelete: Boolean = true, val isFavorite: Boolean = true
+    val id: Int = 0,
+    val ownerId: Int = 0,
+    val date: Int = 0,
+    val text: String = "Meow",
+    val postType: String = "suggest",
+    val isFavorite: Boolean = true,
+    val canDelete: Post?,
+    val canPin: Post?,
+    val attachments: Array<Attachment>? = emptyArray()
 )
 
 data class Likes(
-    val count: Int = 0, val userLikes: Boolean = true,
-    val canLike: Boolean = true, val canPublish: Boolean = false
+    val count: Int = 0, val userLikes: Boolean = true, val canLike: Boolean = true, val canPublish: Boolean = false
 )
+
+interface Attachment {
+    val type: String
+}
+
+class AudioAttachment(addAudio: Audio): Attachment {
+    override val type: String = "audio"
+    val audio = addAudio
+}
+
+class Audio (
+    val artist : String,
+    val title : String,
+    val albumId : Int,
+    val duration : Int,
+    val genreId : Int
+)
+
+class VideoAttachment(addVideo : Video) : Attachment {
+    override val type: String = "video"
+    val video = addVideo
+}
+
+class Video (
+    val title : String,
+    val description : String,
+    val duration : Int,
+    val views : Int,
+    val comments : Int,
+)
+
 
 object wallService {
     private var posts = emptyArray<Post>()
@@ -34,25 +70,16 @@ object wallService {
     }
 }
 
-    fun main() {
-        val post = Post()
-        val likes = Likes()
-        val like = likes.copy(count = likes.count + 2)
-        val (_, _, _, _, postType) = post
-        val (_, _, canLike) = likes
-        val objects = wallService
+fun main() {
+    val audio1 = Audio("Sting","Volna",3,5,12)
+    val audioAt = AudioAttachment(audio1)
+    val post = Post(
+        1, 2, 12, "Yra!", "copy", true, null, null, arrayOf(audioAt)
+    )
+    val delete = if (post.canDelete !== null) post.canDelete else post
+    val canPins = post.canPin ?: post.canPin
 
-        println(post.text)
-        println(like)
-        println(post)
-        println("$postType, $canLike")
-        println(
-            objects.add(
-                Post(
-                    1, 2,12, "Yra!", "copy", false,
-                    true
-                )
-            )
-        )
-        println(objects.update(Post(2)))
-    }
+    println(delete)
+    println(canPins)
+    println(audioAt)
+}
