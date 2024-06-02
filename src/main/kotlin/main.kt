@@ -6,8 +6,12 @@ data class Post(
     val postType: String = "suggest",
     val isFavorite: Boolean = true,
     val canDelete: Post?,
-    val canPin: Post?,
-    val attachments: Array<Attachment>? = emptyArray()
+    val canPin: Post?
+)
+
+data class Comment(
+    val id: Int = 0, val fromId: Int = 0, val date: Int = 0,
+    val text: String = "Yra", val donutIsDon: Boolean = true,
 )
 
 data class Likes(
@@ -18,12 +22,11 @@ interface Attachment {
     val type: String
 }
 
-class AudioAttachment(addAudio: Audio): Attachment {
+data class AudioAttachment(val audio : Audio): Attachment {
     override val type: String = "audio"
-    val audio = addAudio
 }
 
-class Audio (
+data class Audio (
     val artist : String,
     val title : String,
     val albumId : Int,
@@ -31,12 +34,11 @@ class Audio (
     val genreId : Int
 )
 
-class VideoAttachment(addVideo : Video) : Attachment {
+data class VideoAttachment(val video : Video ): Attachment {
     override val type: String = "video"
-    val video = addVideo
 }
 
-class Video (
+data class Video (
     val title : String,
     val description : String,
     val duration : Int,
@@ -44,13 +46,15 @@ class Video (
     val comments : Int,
 )
 
+class PostNotFoundException (message: String) : RuntimeException(message)
 
 object wallService {
     private var posts = emptyArray<Post>()
     private var idNum = 0
+    private var comments = emptyArray<Comment>()
+    private var postId = 0
     fun add(post: Post): Post {
-        idNum += 1
-        posts += post.copy(id = idNum)
+        posts += post.copy(id = ++ idNum)
         return posts.last()
     }
 
@@ -64,22 +68,38 @@ object wallService {
         return false
     }
 
+    fun createComment(postId: Int, comment: Comment): Comment {
+        for (post in posts) {
+            if (post.id == postId) {
+                comments += comment
+                return comments.last()
+            }
+        }
+        throw PostNotFoundException ("No post with $idNum")
+    }
+
     fun clear() {
         posts = emptyArray()
         idNum = 0
+        comments = emptyArray()
+        postId = 0
     }
 }
 
 fun main() {
-    val audio1 = Audio("Sting","Volna",3,5,12)
-    val audioAt = AudioAttachment(audio1)
+    val attachment = AudioAttachment(Audio("Sting","Yra!",
+        2,3,12))
     val post = Post(
-        1, 2, 12, "Yra!", "copy", true, null, null, arrayOf(audioAt)
-    )
+        1, 2, 12, "Yra!", "copy", true, null, null)
     val delete = if (post.canDelete !== null) post.canDelete else post
     val canPins = post.canPin ?: post.canPin
+    val comment = Comment(2,6)
+    wallService.add(post)
+    wallService.createComment(1,comment)
 
     println(delete)
     println(canPins)
-    println(audioAt)
+    println(attachment)
+
+    println(comment.fromId)
 }
