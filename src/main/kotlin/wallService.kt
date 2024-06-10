@@ -29,26 +29,30 @@ object wallService {
         }
         throw PostNotFoundException("No post with $idNum")
     }
+
     fun addNote(notes: Notes): Notes {
         note += notes.copy(noteId = ++idNum)
         return note.last()
     }
+
     fun createCommentNote(noteId: Int, comment: Comment): Comment {
         for (notes in note)
             if (notes.noteId == noteId) {
-                notes.coments += comment.copy(commentId = ++ idNum)
+                notes.coments += comment.copy(commentId = ++idNum)
                 return notes.coments.last()
             }
         throw NotesNotFoundException("No notes with $idNum")
     }
-    fun delete (noteId: Int) : Int {
+
+    fun delete(noteId: Int): Int {
         for (notes in note)
             if (notes.noteId == noteId) {
                 note.remove(notes)
-            return 1
-        }
+                return 1
+            }
         throw NotesNotFoundException("No notes with $idNum")
     }
+
     fun deleteComment(noteId: Int, commentId: Int): Int {
         for (notes in note)
             if (notes.noteId == noteId) {
@@ -56,31 +60,34 @@ object wallService {
                     if (comment.commentId == commentId && !comment.delete) {
                         comment.delete = true
                         return 1
+                    }
                 }
             }
-        }
         throw NotesNotFoundException("No notes with $idNum")
     }
-    fun editNotes(notesEd: Notes) : Int {
+
+    fun editNotes(notesEd: Notes): Int {
         for ((index, notes) in note.withIndex())
             if (notes.noteId == notesEd.noteId) {
                 note[index] = notesEd
                 return 2
-        }
+            }
         throw NotesNotFoundException("No notes with $idNum")
     }
-fun editComment (noteId: Int, commentId: Int, newCom : Comment) : Int {
-    for (notes in note)
-        if (notes.noteId == noteId) {
-            for (comment in notes.coments) {
-                if (comment.commentId == commentId && !comment.delete) {
-                    comment.message = newCom.message
-                    return 2
+
+    fun editComment(noteId: Int, commentId: Int, newCom: Comment): Int {
+        for (notes in note)
+            if (notes.noteId == noteId) {
+                for (comment in notes.coments) {
+                    if (comment.commentId == commentId && !comment.delete) {
+                        comment.message = newCom.message
+                        return 2
+                    }
+                }
             }
-        }
+        throw NotesNotFoundException("No notes with $idNum")
     }
-    throw NotesNotFoundException("No notes with $idNum")
-}
+
     fun getNote(): List<Notes> {
         if (note.isNotEmpty()) {
             return note
@@ -108,11 +115,11 @@ fun editComment (noteId: Int, commentId: Int, newCom : Comment) : Int {
                 }
                 return coments
             }
-    }
+        }
         throw NotesNotFoundException("No notes with $idNum")
     }
 
-    fun restoreComment (noteId: Int, commentId: Int) : Int {
+    fun restoreComment(noteId: Int, commentId: Int): Int {
         for (notes in note)
             if (notes.noteId == noteId) {
                 for (comment in notes.coments) {
@@ -123,7 +130,7 @@ fun editComment (noteId: Int, commentId: Int, newCom : Comment) : Int {
                 }
             }
         throw NotesNotFoundException("No notes with $idNum")
-        }
+    }
 
     fun clear() {
         posts = emptyArray()
